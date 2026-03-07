@@ -13,9 +13,9 @@ public class Main  {
     public static void main(String[] args) {
     
         String header = null;
-        int linesToProcess = 50;
-        List<String> data = new ArrayList<>();
-        List<Integer> volumes = new ArrayList<>();
+        int linesToProcess = 250;
+        String[] data = new String[linesToProcess];
+        int[] volumes = new int[linesToProcess];
         
 
 
@@ -32,14 +32,27 @@ public class Main  {
         //shellSort(volumes, data);
         radixSort(volumes, data, 6);
 
-        for(int i = 0; i < 50; i++){
-            System.out.println(volumes.get(i));
+        for(int i = 0; i < 250; i++){
+            System.out.println(volumes[i]);
         }
 
         
-}
+    }
+
+    static void swap(int[] arr, int i, int j) {
+        int temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+    }
+
+    static void swap(String[] arr, int i, int j) {
+        String temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+    }
+
     
-    static void processData (List<String> data, List<Integer> volumes, int linesToProcess, String header ) throws IOException {
+    static void processData (String[] data, int[] volumes, int linesToProcess, String header ) throws IOException {
         
         BufferedReader br = new BufferedReader(new FileReader("all_stocks_5yr.csv"));
         String line;
@@ -49,10 +62,10 @@ public class Main  {
         int counter = 0;
 
         while ((line = br.readLine()) != null && counter < linesToProcess) {
-            data.add(line);
+            data[counter] = line;
             String[] parts = line.split(",");
             int volume = Integer.parseInt(parts[5]);
-            volumes.add(volume);
+            volumes[counter] = volume;
             counter++;
             
         }
@@ -74,7 +87,7 @@ public class Main  {
 
 
 
-    static void quicksort (List<Integer> arr, List<String> data, int low, int high){
+    static void quicksort (int[] arr, String[] data, int low, int high){
 
         int stackSize = high - low + 1;
         int[] stack = new int[stackSize];
@@ -104,37 +117,38 @@ public class Main  {
         }
     }
 
-    static int partition(List<Integer> arr, int low, int high){
-        int pivot = arr.get(high);
+    static int partition(int[] arr, int low, int high){
+        int pivot = arr[high];
         int i = low - 1;
         for(int j = low; j < high; j++){
-            if(arr.get(j) <= pivot){
+            if(arr[j] <= pivot){
                 i = i + 1;
-                Collections.swap(arr, i, j);
+                swap(arr, i, j);
             }
         }
-        Collections.swap(arr, i + 1, high);
+        swap(arr, i + 1, high);
         return i + 1;
     }
 
-    static void insertionSort(List<Integer> arr, List<String> data) {
+    
+    static void insertionSort(int[] arr, String[] data) {
 
-        for(int j = 0; j < arr.size(); j++){
-            int key = arr.get(j);
+        for(int j = 0; j < arr.length; j++){
+            int key = arr[j];
             int i = j - 1;
-            while( i >= 0 && arr.get(i) > key){
-                arr.set(i + 1, arr.get(i));
+            while( i >= 0 && arr[i] > key){
+                arr[i + 1] = arr[i];
                 i--;
             } 
-            arr.set(i + 1, key);
+            arr[i + 1] = key;
         
         }
 
     }
 
 
-    static void mergeSort(List<Integer> arr, List<String> data) {
-        int n = arr.size();
+    static void mergeSort(int[] arr, String[] data) {
+        int n = arr.length;
         int[] temp = new int[n];
         int currSize = 1;
         while ( currSize < n){
@@ -151,48 +165,48 @@ public class Main  {
 
     }
 
-    static void merge(List<Integer> arr, List<String> data, int[] temp, int left, int mid, int right){
+    static void merge(int[] arr, String[] data, int[] temp, int left, int mid, int right){
         int i = left;
         int j = mid + 1;
         int k = left;
         while(i <= mid && j <= right){
-            if(arr.get(i) <= arr.get(j)){
-                temp[k] = arr.get(i);
+            if(arr[i] <= arr[j]){
+                temp[k] = arr[i];
                 i++;
             }
             else{
-                temp[k] = arr.get(j);
+                temp[k] = arr[j];
                 j++;
             }
             k++;
         }
         while(i <= mid){
-            temp[k] = arr.get(i);
+            temp[k] = arr[i];
             i++;
             k++;
             
         }
         while(j <= right){
-            temp[k] = arr.get(j);
+            temp[k] = arr[j];
             j++;
             k++;
         }
         for(i = left; i <= right; i++){
-            arr.set(i, temp[i]); 
+            arr[i] = temp[i]; 
         }
     
     }
 
-    static void shellSort(List<Integer> arr, List<String> data){
-        int n = arr.size();
+    static void shellSort(int[] arr, String[] data){
+        int n = arr.length;
         int h = 1;
         while(h < n/3){
             h = 3*h + 1;
         }
         while( h >= 1){
             for(int i = h; i <= n-1; i++){
-                for(int j = i; j >=h && arr.get(j) < arr.get(j - h); j -= h){
-                    Collections.swap(arr, j, j - h);
+                for(int j = i; j >=h && arr[j] < arr[j - h]; j -= h){
+                    swap(arr, j, j - h);
                 }
             }
             h = h / 3;
@@ -200,32 +214,34 @@ public class Main  {
         }
     }
 
-    static void radixSort(List<Integer> arr, List<String> data, int numbofdigits){
+    static void radixSort(int[] arr, String[] data, int numbofdigits){
         for(int pos = 0; pos < numbofdigits; pos++){
             
-            List<Integer> sorted = countingsort(arr, data, pos);
+            int[] sorted = countingsort(arr, data, pos);
 
-            Collections.copy(arr, sorted);
+            for(int i = 0; i < arr.length; i++){
+                arr[i] = sorted[i];
+            }
         }
 
     }
 
-    static List<Integer> countingsort(List<Integer> arr, List<String> data, int pos){
+    static int[] countingsort(int[] arr, String[] data, int pos){
         int[] count = new int[10];
-        int size = arr.size();
-        List<Integer> output = new ArrayList<>(Collections.nCopies(size, 0));
+        int size = arr.length;
+        int[] output = new int[size];
         
         for(int i = 0; i < size; i++){
-            int digit = getDigit(arr.get(i), pos);
+            int digit = getDigit(arr[i], pos);
             count[digit] = count[digit] + 1;
         }
         for(int i = 1; i < 10; i++){
             count[i] = count[i] + count[i-1];
         }
         for(int i = size - 1; i >= 0; i--){
-            int digit = getDigit(arr.get(i), pos);
+            int digit = getDigit(arr[i], pos);
             count[digit] = count[digit] - 1;
-            output.set(count[digit], arr.get(i));
+            output[count[digit]] = arr[i];
         }
     
         return output;
