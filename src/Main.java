@@ -2,10 +2,12 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
-import java.util.ArrayList;
-import java.util.Collections;
+//import java.util.ArrayList;
+//import java.util.Collections;
 import java.util.Arrays;
-
+import java.util.Random;
+import org.knowm.xchart.*;
+import java.util.*;
 
 public class Main  {
 
@@ -28,93 +30,162 @@ public class Main  {
             e.printStackTrace();
         }
 
-        int[] sizes = {500, 1000, 2000, 4000, 8000, 16000, 32000, 64000, 128000, 250000};
 
-        for (int size : sizes) {
-            int[] volumesCopy = Arrays.copyOf(volumes, size);
-            String[] dataCopy = Arrays.copyOf(data, size);
+        
+        
 
-            System.out.println("Sorting " + size + " entries:");
+        int[] sizes = {500, 1000, 2000, 4000, 8000, 16000};
 
-            // quicksort original
-            volumesCopy = Arrays.copyOf(volumes, size);
-            long start = System.currentTimeMillis();
-            quicksort(volumesCopy, 0, size - 1);
-            long end = System.currentTimeMillis();
-            System.out.println("quicksort original size " + size + ": " + (end - start) + " ms");
+        double[][][] results = new double[sizes.length][3][10]; // [size][scenario][alg] 0:random, 1:sorted, 2:reverse
 
-            // quicksort overloaded
-            volumesCopy = Arrays.copyOf(volumes, size);
-            dataCopy = Arrays.copyOf(data, size);
-            start = System.currentTimeMillis();
-            quicksort(volumesCopy, dataCopy, 0, size - 1);
-            end = System.currentTimeMillis();
-            System.out.println("quicksort overloaded size " + size + ": " + (end - start) + " ms");
+        for (int s = 0; s < sizes.length; s++) {
+            int size = sizes[s];
+            int[] baseVolumes = Arrays.copyOf(volumes, size);
+            String[] baseData = Arrays.copyOf(data, size);
 
-            // insertionSort original
-            volumesCopy = Arrays.copyOf(volumes, size);
-            start = System.currentTimeMillis();
-            insertionSort(volumesCopy);
-            end = System.currentTimeMillis();
-            System.out.println("insertionSort original size " + size + ": " + (end - start) + " ms");
+            // Random scenario
+            for (int alg = 0; alg < 10; alg++) {
+                long total = 0;
+                for (int run = 0; run < 10; run++) {
+                    shuffleArrays(baseVolumes, baseData);
+                    long start = System.currentTimeMillis();
+                    if (alg == 0) quicksort(baseVolumes, 0, size - 1);
+                    else if (alg == 1) quicksort(baseVolumes, baseData, 0, size - 1);
+                    else if (alg == 2) insertionSort(baseVolumes);
+                    else if (alg == 3) insertionSort(baseVolumes, baseData);
+                    else if (alg == 4) mergeSort(baseVolumes);
+                    else if (alg == 5) mergeSort(baseVolumes, baseData);
+                    else if (alg == 6) shellSort(baseVolumes);
+                    else if (alg == 7) shellSort(baseVolumes, baseData);
+                    else if (alg == 8) radixSort(baseVolumes, 6);
+                    else if (alg == 9) radixSort(baseVolumes, baseData, 6);
+                    long end = System.currentTimeMillis();
+                    total += (end - start);
+                }
+                results[s][0][alg] = total / 10.0;
+            }
 
-            // insertionSort overloaded
-            volumesCopy = Arrays.copyOf(volumes, size);
-            dataCopy = Arrays.copyOf(data, size);
-            start = System.currentTimeMillis();
-            insertionSort(volumesCopy, dataCopy);
-            end = System.currentTimeMillis();
-            System.out.println("insertionSort overloaded size " + size + ": " + (end - start) + " ms");
+            // Sorted scenario
+            quicksort(baseVolumes, baseData, 0, size - 1); // sort to make it sorted
+            for (int alg = 0; alg < 10; alg++) {
+                long total = 0;
+                for (int run = 0; run < 10; run++) {
+                    long start = System.currentTimeMillis();
+                    if (alg == 0) quicksort(baseVolumes, 0, size - 1);
+                    else if (alg == 1) quicksort(baseVolumes, baseData, 0, size - 1);
+                    else if (alg == 2) insertionSort(baseVolumes);
+                    else if (alg == 3) insertionSort(baseVolumes, baseData);
+                    else if (alg == 4) mergeSort(baseVolumes);
+                    else if (alg == 5) mergeSort(baseVolumes, baseData);
+                    else if (alg == 6) shellSort(baseVolumes);
+                    else if (alg == 7) shellSort(baseVolumes, baseData);
+                    else if (alg == 8) radixSort(baseVolumes, 6);
+                    else if (alg == 9) radixSort(baseVolumes, baseData, 6);
+                    long end = System.currentTimeMillis();
+                    total += (end - start);
+                }
+                results[s][1][alg] = total / 10.0;
+            }
 
-            // mergeSort original
-            volumesCopy = Arrays.copyOf(volumes, size);
-            start = System.currentTimeMillis();
-            mergeSort(volumesCopy);
-            end = System.currentTimeMillis();
-            System.out.println("mergeSort original size " + size + ": " + (end - start) + " ms");
+            // Reverse scenario
+            reverse(baseVolumes, baseData); // reverse to make it reverse sorted
+            for (int alg = 0; alg < 10; alg++) {
+                long total = 0;
+                for (int run = 0; run < 10; run++) {
+                    long start = System.currentTimeMillis();
+                    if (alg == 0) quicksort(baseVolumes, 0, size - 1);
+                    else if (alg == 1) quicksort(baseVolumes, baseData, 0, size - 1);
+                    else if (alg == 2) insertionSort(baseVolumes);
+                    else if (alg == 3) insertionSort(baseVolumes, baseData);
+                    else if (alg == 4) mergeSort(baseVolumes);
+                    else if (alg == 5) mergeSort(baseVolumes, baseData);
+                    else if (alg == 6) shellSort(baseVolumes);
+                    else if (alg == 7) shellSort(baseVolumes, baseData);
+                    else if (alg == 8) radixSort(baseVolumes, 6);
+                    else if (alg == 9) radixSort(baseVolumes, baseData, 6);
+                    long end = System.currentTimeMillis();
+                    total += (end - start);
+                }
+                results[s][2][alg] = total / 10.0;
+            }
+        }
 
-            // mergeSort overloaded
-            volumesCopy = Arrays.copyOf(volumes, size);
-            dataCopy = Arrays.copyOf(data, size);
-            start = System.currentTimeMillis();
-            mergeSort(volumesCopy, dataCopy);
-            end = System.currentTimeMillis();
-            System.out.println("mergeSort overloaded size " + size + ": " + (end - start) + " ms");
+        // Print results
+        String[] algNames = {"quicksort original", "quicksort overloaded", "insertionSort original", "insertionSort overloaded", 
+                             "mergeSort original", "mergeSort overloaded", "shellSort original", "shellSort overloaded", 
+                             "radixSort original", "radixSort overloaded"};
+        String[] scenarios = {"Random", "Sorted", "Reverse"};
 
-            // shellSort original
-            volumesCopy = Arrays.copyOf(volumes, size);
-            start = System.currentTimeMillis();
-            shellSort(volumesCopy);
-            end = System.currentTimeMillis();
-            System.out.println("shellSort original size " + size + ": " + (end - start) + " ms");
-
-            // shellSort overloaded
-            volumesCopy = Arrays.copyOf(volumes, size);
-            dataCopy = Arrays.copyOf(data, size);
-            start = System.currentTimeMillis();
-            shellSort(volumesCopy, dataCopy);
-            end = System.currentTimeMillis();
-            System.out.println("shellSort overloaded size " + size + ": " + (end - start) + " ms");
-
-            // radixSort original
-            volumesCopy = Arrays.copyOf(volumes, size);
-            start = System.currentTimeMillis();
-            radixSort(volumesCopy, 6);
-            end = System.currentTimeMillis();
-            System.out.println("radixSort original size " + size + ": " + (end - start) + " ms");
-
-            // radixSort overloaded
-            volumesCopy = Arrays.copyOf(volumes, size);
-            dataCopy = Arrays.copyOf(data, size);
-            start = System.currentTimeMillis();
-            radixSort(volumesCopy, dataCopy, 6);
-            end = System.currentTimeMillis();
-            System.out.println("radixSort overloaded size " + size + ": " + (end - start) + " ms");
-
+        for (int s = 0; s < sizes.length; s++) {
+            System.out.println("Size: " + sizes[s]);
+            for (int scen = 0; scen < 3; scen++) {
+                System.out.println("  " + scenarios[scen] + ":");
+                for (int alg = 0; alg < 10; alg++) {
+                    System.out.println("    " + algNames[alg] + ": " + results[s][scen][alg] + " ms");
+                }
+            }
             System.out.println();
         }
         
+        List<Integer> xData = Arrays.asList(1,2,3,4,5);
+        List<Integer> yData = Arrays.asList(10,20,15,30,25);
+
+        XYChart chart = new XYChartBuilder()
+                .width(800)
+                .height(600)
+                .title("Line Graph")
+                .xAxisTitle("X")
+                .yAxisTitle("Y")
+                .build();
+
+        chart.addSeries("Example", xData, yData);
+
+        new SwingWrapper<>(chart).displayChart();
     }
+
+
+
+    static void reverse(int[] arr, String[] data){
+        int left = 0;
+        int right = arr.length - 1;
+
+        while(left < right){
+
+            int temp = arr[left];
+            arr[left] = arr[right];
+            arr[right] = temp;
+
+            String temp2 = data[left];
+            data[left] = data[right];
+            data[right] = temp2;
+
+            left++;
+            right--;
+        }
+    }
+
+    static void shuffleArrays(int[] numbers, String[] data) {
+        if (numbers.length != data.length) {
+            throw new IllegalArgumentException("Arrays must be the same length!");
+        }
+
+        Random rnd = new Random();
+
+        for (int i = numbers.length - 1; i > 0; i--) {
+            int j = rnd.nextInt(i + 1); // 0..i arası random index
+
+            // swap numbers
+            int tempNum = numbers[i];
+            numbers[i] = numbers[j];
+            numbers[j] = tempNum;
+
+            // swap data
+            String tempStr = data[i];
+            data[i] = data[j];
+            data[j] = tempStr;
+        }
+    }
+
 
     static void swap(int[] arr, int i, int j) {
         int temp = arr[i];
@@ -131,7 +202,7 @@ public class Main  {
     
     static void processData (String[] data, int[] volumes, int linesToProcess, String header ) throws IOException {
         
-        BufferedReader br = new BufferedReader(new FileReader("all_stocks_5yr.csv"));
+        BufferedReader br = new BufferedReader(new FileReader("C:\\JavaAssignments\\java1\\java\\data\\all_stocks_5yr.csv"));
         String line;
 
         // skip header
