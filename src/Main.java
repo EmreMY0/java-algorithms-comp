@@ -640,8 +640,10 @@ public class Main  {
         }
         while( h >= 1){
             for(int i = h; i <= n-1; i++){
-                for(int j = i; j >=h && arr[j] < arr[j - h]; j -= h){
+                int j = i;
+                while (j >= h && arr[j] < arr[j - h]){
                     swap(arr, j, j - h);
+                    j -= h;
                 }
             }
             h = h / 3;
@@ -657,9 +659,11 @@ public class Main  {
         }
         while( h >= 1){
             for(int i = h; i <= n-1; i++){
-                for(int j = i; j >=h && arr[j] < arr[j - h]; j -= h){
+                int j = i;
+                while (j >= h && arr[j] < arr[j - h]){
                     swap(arr, j, j - h);
                     swap(data, j, j - h);
+                    j -= h;
                 }
             }
             h = h / 3;
@@ -874,9 +878,10 @@ public class Main  {
 
             for(int i = h; i < n; i++){
 
-                for(int j = i; j >= h && volumes[index[j]] < volumes[index[j-h]]; j -= h){
-
+                int j = i;
+                while (j >= h && volumes[index[j]] < volumes[index[j-h]]) {
                     swap(index, j, j-h);
+                    j -= h;
                 }
             }
 
