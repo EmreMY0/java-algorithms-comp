@@ -50,16 +50,16 @@ public class Main  {
                     int[] runIndex = createIndex(size);
                     shuffleIndex(runIndex);
 
-                    long start = System.currentTimeMillis();
+                    long start = System.nanoTime();
                     if (alg == 0) quicksortIndirect(runIndex, origVolumes, 0, size - 1);
                     else if (alg == 1) insertionSortIndirect(runIndex, origVolumes);
                     else if (alg == 2) mergeSortIndirect(runIndex, origVolumes);
                     else if (alg == 3) shellSortIndirect(runIndex, origVolumes);
                     else if (alg == 4) radixSortIndirect(runIndex, origVolumes, 6);
-                    long end = System.currentTimeMillis();
+                    long end = System.nanoTime();
                     total += (end - start);
                 }
-                results[s][0][alg] = total / 10.0;
+                results[s][0][alg] = (total / 10.0) / 1_000_000.0;
             }
 
             // Sorted scenario
@@ -68,16 +68,16 @@ public class Main  {
                 for (int run = 0; run < 10; run++) {
                     int[] runIndex = Arrays.copyOf(sortedIndex, size);
 
-                    long start = System.currentTimeMillis();
+                    long start = System.nanoTime();
                     if (alg == 0) quicksortIndirect(runIndex, origVolumes, 0, size - 1);
                     else if (alg == 1) insertionSortIndirect(runIndex, origVolumes);
                     else if (alg == 2) mergeSortIndirect(runIndex, origVolumes);
                     else if (alg == 3) shellSortIndirect(runIndex, origVolumes);
                     else if (alg == 4) radixSortIndirect(runIndex, origVolumes, 6);
-                    long end = System.currentTimeMillis();
+                    long end = System.nanoTime();
                     total += (end - start);
                 }
-                results[s][1][alg] = total / 10.0;
+                results[s][1][alg] = (total / 10.0) / 1_000_000.0;
             }
 
             // Reverse scenario
@@ -86,16 +86,16 @@ public class Main  {
                 for (int run = 0; run < 10; run++) {
                     int[] runIndex = Arrays.copyOf(reversedIndex, size);
 
-                    long start = System.currentTimeMillis();
+                    long start = System.nanoTime();
                     if (alg == 0) quicksortIndirect(runIndex, origVolumes, 0, size - 1);
                     else if (alg == 1) insertionSortIndirect(runIndex, origVolumes);
                     else if (alg == 2) mergeSortIndirect(runIndex, origVolumes);
                     else if (alg == 3) shellSortIndirect(runIndex, origVolumes);
                     else if (alg == 4) radixSortIndirect(runIndex, origVolumes, 6);
-                    long end = System.currentTimeMillis();
+                    long end = System.nanoTime();
                     total += (end - start);
                 }
-                results[s][2][alg] = total / 10.0;
+                results[s][2][alg] = (total / 10.0) / 1_000_000.0;
             }
         }
 
@@ -172,7 +172,7 @@ public class Main  {
         for (int scen = 0; scen < scenarios.length; scen++) {
             List<Double> yData = new ArrayList<>();
             for (int s = 0; s < sizes.length; s++) {
-                yData.add(results[s][scen][0]); // 0 is quicksort
+                yData.add(results[s][scen][0]); 
             }
             quicksortChart.addSeries(scenarios[scen], xData, yData);
         }
@@ -191,7 +191,7 @@ public class Main  {
         for (int scen = 0; scen < scenarios.length; scen++) {
             List<Double> yData = new ArrayList<>();
             for (int s = 0; s < sizes.length; s++) {
-                yData.add(results[s][scen][2]); // 2 is merge sort
+                yData.add(results[s][scen][2]); 
             }
             mergeSortChart.addSeries(scenarios[scen], xData, yData);
         }
