@@ -1,18 +1,25 @@
-## Getting Started
+# Sorting Algorithm Benchmark
 
-Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
+A simple Java program to benchmark different sorting algorithms on stock volume data.  
 
-## Folder Structure
+## Features
+- Indirect and direct implementations of:
+  - Quicksort
+  - Insertion Sort
+  - Merge Sort
+  - Shell Sort
+  - Radix Sort
+- Tests performance on:
+  - Random data
+  - Sorted data
+  - Reverse-sorted data
+- Generates charts using XChart.
 
-The workspace contains two folders by default, where:
+## Usage
+1. Place `all_stocks_5yr.csv` in the specified path.
+2. Compile and run `Main.java`.
+3. Program outputs timing results and displays charts for each algorithm and scenario.
 
-- `src`: the folder to maintain sources
-- `lib`: the folder to maintain dependencies
-
-Meanwhile, the compiled output files will be generated in the `bin` folder by default.
-
-> If you want to customize the folder structure, open `.vscode/settings.json` and update the related settings there.
-
-## Dependency Management
-
-The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
+## Requirements
+- Java 8+
+- XChart library
